@@ -91,7 +91,7 @@ contract AuctionNFT is Ownable, ReentrancyGuard {
     /// @notice Sends the NFT to the buyer and the money to the owner of the contract.
     /// @dev Will revert if the auction of the tokenId has not started or if the auction has not ended.
     /// @param tokenId of the NFT to close the auction.
-    function closeAuction(uint256 tokenId) external onlyOwner {
+    function closeAuction(uint256 tokenId) external onlyOwner nonReentrant {
 
         Auction storage auction = auctions[tokenId];
 
