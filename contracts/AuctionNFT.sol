@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
@@ -102,7 +102,7 @@ contract AuctionNFT is Ownable, ReentrancyGuard {
 
         uint256 amountToTransfer = auction.highestBid;
         auction.highestBid = 0;  // Reset highest bid to prevent reentrancy
-        payable(owner()).transfer(auction.highestBid);
+        payable(owner()).transfer(amountToTransfer);
 
         emit AuctionEnded(tokenId, auction.highestBidder, amountToTransfer);
     }

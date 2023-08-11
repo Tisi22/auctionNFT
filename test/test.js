@@ -35,9 +35,6 @@ describe("Deploy", function() {
     //minimumBit = 0.001 ETH
     //auctionDuration = 30 seg
     const AuctionContract = await AuctionContractFactory.deploy(nftAddress, 1000000000000000, 30);
-    const AuctionAddress = await AuctionContract.getAddress();
-
-    console.log(AuctionAddress);
 
   });
 });
@@ -46,8 +43,6 @@ describe("AuctionNFT", function() {
   it("Start an Auction", async function() {
 
     const {nftContract, AuctionContract, AuctionAddress} = await deploy();
-
-    console.log(AuctionAddress);
 
     const signers = await ethers.getSigners();
     const minter = signers[0].address;
@@ -66,7 +61,6 @@ describe("AuctionNFT", function() {
 
     const {nftContract, AuctionContract, AuctionAddress} = await deploy();
 
-    console.log(AuctionAddress);
 
     const signers = await ethers.getSigners();
     const minter = signers[0].address;
@@ -88,13 +82,9 @@ describe("AuctionNFT", function() {
 
     const { nftContract, AuctionContract, AuctionAddress } = await deploy();
 
-    console.log(AuctionAddress);
-
     const [ContractOwner, _] = await ethers.getSigners();
 
     const ContractOwnerAddr = ContractOwner.address;
-
-    const initialBalance = await ethers.provider.getBalance(ContractOwnerAddr);
 
     await nftContract.safeMint(ContractOwnerAddr, "https://raw.githubusercontent.com/Tisi22/json/main/3.json", 1);
 
@@ -108,28 +98,45 @@ describe("AuctionNFT", function() {
 
     await expect(AuctionContract.closeAuction(1))
         .to.emit(AuctionContract, 'AuctionEnded')
-        .withArgs(1, ContractOwnerAddr, 2000000000000000);
+        .withArgs(1, ContractOwnerAddr, 2000000000000000)
+
+  });
+
+  it("Check balance owner when auction closed", async function() {
+
+    this.timeout(12000);
+
+    const {nftContract, AuctionContract, AuctionAddress} = await deploy();
+
+    const [ContractOwner, user1, user2, _] = await ethers.getSigners()
+
+    const ContractOwnerAddr = ContractOwner.address;
+
+    await nftContract.safeMint(ContractOwnerAddr, "https://raw.githubusercontent.com/Tisi22/json/main/3.json", 1);
+
+    await nftContract.transferFrom(ContractOwnerAddr, AuctionAddress, 1);
+
+    await AuctionContract.startAuction(1);
+
+    await AuctionContract.connect(user1).placeBid(1, { value: 2000000000000000 });
+
+    await new Promise(resolve => setTimeout(resolve, 10000));
+
+    const initialBalance = await ethers.provider.getBalance(ContractOwnerAddr);
+
+    await AuctionContract.closeAuction(1);
 
     const balanceAfterClose = await ethers.provider.getBalance(ContractOwnerAddr);
 
-    const balanceAfterCloseBN = BigNumber.from(balanceAfterClose);
+    expect(balanceAfterClose).to.be.greaterThan(initialBalance);
 
-    const initialBalanceBN = ethers.BigNumer.from(initialBalance);
-
-    const actualReceivedAmount = ethers.formatEther(balanceAfterCloseBN.sub(initialBalanceBN));
-
-    //const actualReceivedAmount = ethers.utils.formatUnits(balanceAfterClose.sub(initialBalance), 'wei');
-    
-    expect(actualReceivedAmount).to.be.equal(2000000000000000);
-});
+  });
 
   it("Check NFT owner when auction closed", async function() {
 
     this.timeout(12000);
 
     const {nftContract, AuctionContract, AuctionAddress} = await deploy();
-
-    console.log(AuctionAddress);
 
     const [ContractOwner, user1, user2, _] = await ethers.getSigners()
 
@@ -150,6 +157,52 @@ describe("AuctionNFT", function() {
     await AuctionContract.closeAuction(1);
 
     expect(await nftContract.ownerOf(1)).to.equal(user2.address);
+
+  });
+
+  it("Should failed to close Auction", async function() {
+
+    const { nftContract, AuctionContract, AuctionAddress } = await deploy();
+
+    const [ContractOwner, _] = await ethers.getSigners();
+
+    const ContractOwnerAddr = ContractOwner.address;
+
+    await nftContract.safeMint(ContractOwnerAddr, "https://raw.githubusercontent.com/Tisi22/json/main/3.json", 1);
+
+    await nftContract.transferFrom(ContractOwnerAddr, AuctionAddress, 1);
+
+    await AuctionContract.startAuction(1);
+
+    await AuctionContract.placeBid(1, { value: 2000000000000000 });
+
+    await expect(AuctionContract.closeAuction(1))
+      .to.be.revertedWith("Auction not yet ended");
+
+  });
+
+  it("Should failed to place a Bid", async function() {
+
+    this.timeout(12000);
+
+    const {nftContract, AuctionContract, AuctionAddress} = await deploy();
+
+    const [ContractOwner, user1, user2, _] = await ethers.getSigners()
+
+    const ContractOwnerAddr = ContractOwner.address;
+
+    await nftContract.safeMint(ContractOwnerAddr, "https://raw.githubusercontent.com/Tisi22/json/main/3.json", 1);
+
+    await nftContract.transferFrom(ContractOwnerAddr, AuctionAddress, 1);
+
+    await AuctionContract.startAuction(1);
+
+    await AuctionContract.connect(user1).placeBid(1, { value: 2000000000000000 });
+
+    await new Promise(resolve => setTimeout(resolve, 10000));
+
+    await expect(AuctionContract.connect(user2).placeBid(1, { value: 3000000000000000 }))
+      .to.be.revertedWith("Auction ended");
 
   });
 
