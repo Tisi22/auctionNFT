@@ -1,5 +1,12 @@
 # auctionNFT
 
+## Contracts deployed on Goerli
+
+MyToken.sol: 0x28719ac86Fc6cc271274B1e6B8230D1155C0D131 (Standard ERC721 necessari to deploy and test the AuctionNFT.sol)
+
+AuctionNFT.sol: 0xaf6Ef2508bA80043b7a71D46a104d9e77b1013c7 - https://goerli.etherscan.io/address/0xaf6Ef2508bA80043b7a71D46a104d9e77b1013c7
+
+
 ## Deploy and test local environment
 
 npm install
@@ -66,8 +73,6 @@ To deploy a contract on the Goerli testnet using Hardhat with a public RPC, foll
        goerli: {
          url: "YOUR_PUBLIC_RPC_URL", // for example, use a service like Alchemy or Infura
          accounts: ["YOUR_PRIVATE_KEY"], // private key (without 0x prefix)
-         gasPrice: 20000000000, // (optional) you can specify gas price
-         gas: 6000000, // (optional) you can specify gas limit for transactions
        },
      },
      etherscan: {
@@ -99,3 +104,14 @@ To deploy a contract on the Goerli testnet using Hardhat with a public RPC, foll
    Replace `DEPLOYED_CONTRACT_ADDRESS` with your contract's deployed address and provide the constructor arguments if any.
 
 Make sure you have enough test ETH in the Goerli account corresponding to the private key you provided. You can request Goerli ETH from various faucets available online.
+
+## Constraints
+
+Security
+
+- Reentrancy attacks: import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+- Overflow and underflow: Compiler 0.8.19 solved this problem
+
+
+
+

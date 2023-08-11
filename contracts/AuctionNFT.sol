@@ -15,7 +15,7 @@ contract AuctionNFT is Ownable, ReentrancyGuard {
     }
 
     //ERC721 smart contract to set up auctions
-    IERC721 public nft;
+    IERC721 immutable public nft;
 
     // in wei
     uint256 public minBidAmount;
