@@ -2,7 +2,7 @@
 
 ## Contracts deployed on Goerli
 
-MyToken.sol: 0x28719ac86Fc6cc271274B1e6B8230D1155C0D131 (Standard ERC721 necessari to deploy and test the AuctionNFT.sol)
+MyToken.sol: 0x28719ac86Fc6cc271274B1e6B8230D1155C0D131 (Standard ERC721 necessary to deploy and test the AuctionNFT.sol)
 
 AuctionNFT.sol: 0xaf6Ef2508bA80043b7a71D46a104d9e77b1013c7 - https://goerli.etherscan.io/address/0xaf6Ef2508bA80043b7a71D46a104d9e77b1013c7
 
@@ -110,7 +110,7 @@ Make sure you have enough test ETH in the Goerli account corresponding to the pr
 Security
 
 - Reentrancy attacks: import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-- Overflow and underflow: Compiler 0.8.19 solved this problem
+- Overflow and underflow: Compiler 0.8.X optimizes for this issue authomatically
 
 
 

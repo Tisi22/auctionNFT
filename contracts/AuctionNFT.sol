@@ -38,13 +38,13 @@ contract AuctionNFT is Ownable, ReentrancyGuard {
 
     // ----- SET FUNCTIONS -----
 
-    /// @notice Sets a new Auction duration for all the auctions.
+    /// @notice Sets a new Auction duration for the auctions.
     /// @param _auctionDuration Auction duration in seconds (1 hour - 3600).
     function setNewAuctionDuration(uint256 _auctionDuration) public onlyOwner {
         auctionDuration = _auctionDuration;
     }
 
-    /// @notice Sets a new minimum bid amount for all the auctions.
+    /// @notice Sets a new minimum bid amount for the auctions.
     /// @param _minBidAmount minimum bid amount in wei.
     function setNewMinBidAmount(uint256 _minBidAmount) public onlyOwner {
         minBidAmount = _minBidAmount;
